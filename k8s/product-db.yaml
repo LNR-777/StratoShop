@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-db
+  namespace: stratoshop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-db
+  template:
+    metadata:
+      labels:
+        app: product-db
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: stratoshop-secrets
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: stratoshop-config
+              key: PRODUCT_DB_NAME
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-db
+  namespace: stratoshop
+spec:
+  selector:
+    app: product-db
+  ports:
+  - port: 3306
+    targetPort: 3306

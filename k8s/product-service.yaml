@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+  namespace: stratoshop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      containers:
+      - name: product-service
+        image: lnr777/stratoshop-product-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8082
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://product-db:3306/stratoshop_product_db?createDatabaseIfNotExist=true&useSSL=false"
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: stratoshop-config
+              key: MYSQL_USER
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: stratoshop-secrets
+              key: MYSQL_ROOT_PASSWORD
+        - name: EUREKA_SERVER_URL
+          valueFrom:
+            configMapKeyRef:
+              name: stratoshop-config
+              key: EUREKA_SERVER_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+  namespace: stratoshop
+spec:
+  selector:
+    app: product-service
+  ports:
+  - port: 8082
+    targetPort: 8082

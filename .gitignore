@@ -1,0 +1,28 @@
+# Secrets
+pass_val.txt
+user_val.txt
+
+# Maven
+target/
+*.class
+**/target/
+
+# Node
+node_modules/
+dist/
+.eslintcache
+
+# Logs
+*.log
+order-logs.txt
+product-logs.txt
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

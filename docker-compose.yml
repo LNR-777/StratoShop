@@ -3,6 +3,7 @@ version: '3.8'
 services:
   discovery-server:
     build: ./discovery-server
+    image: lnr777/stratoshop-discovery-server:latest
     container_name: discovery-server
     ports:
       - "8761:8761"
@@ -11,6 +12,7 @@ services:
 
   api-gateway:
     build: ./api-gateway
+    image: lnr777/stratoshop-api-gateway:latest
     container_name: api-gateway
     ports:
       - "8080:8080"
@@ -34,6 +36,7 @@ services:
 
   user-service:
     build: ./user-service
+    image: lnr777/stratoshop-user-service:latest
     container_name: user-service
     ports:
       - "8081:8081"
@@ -61,6 +64,7 @@ services:
 
   product-service:
     build: ./product-service
+    image: lnr777/stratoshop-product-service:latest
     container_name: product-service
     ports:
       - "8082:8082"
@@ -88,6 +92,7 @@ services:
 
   order-service:
     build: ./order-service
+    image: lnr777/stratoshop-order-service:latest
     container_name: order-service
     ports:
       - "8083:8083"

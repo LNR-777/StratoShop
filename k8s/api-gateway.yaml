@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: stratoshop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+      - name: api-gateway
+        image: lnr777/stratoshop-api-gateway:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: EUREKA_SERVER_URL
+          valueFrom:
+            configMapKeyRef:
+              name: stratoshop-config
+              key: EUREKA_SERVER_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  namespace: stratoshop
+spec:
+  type: LoadBalancer # Or NodePort if on Minikube
+  selector:
+    app: api-gateway
+  ports:
+  - port: 8080
+    targetPort: 8080

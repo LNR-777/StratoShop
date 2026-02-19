@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stratoshop-config
+  namespace: stratoshop
+data:
+  EUREKA_SERVER_URL: "http://discovery-server:8761/eureka/"
+  USER_DB_NAME: "stratoshop_user_db"
+  PRODUCT_DB_NAME: "stratoshop_product_db"
+  ORDER_DB_NAME: "stratoshop_order_db"
+  MYSQL_USER: "root"

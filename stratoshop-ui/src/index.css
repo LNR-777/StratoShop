@@ -1,0 +1,178 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  /* HSL Colors for Harmony */
+  --h-primary: 262;
+  --h-secondary: 190;
+  --h-accent: 345;
+  --h-bg: 222;
+
+  --primary-color: hsl(var(--h-primary), 80%, 60%);
+  --primary-hover: hsl(var(--h-primary), 85%, 65%);
+  --primary-muted: hsla(var(--h-primary), 80%, 60%, 0.15);
+
+  --secondary-color: hsl(var(--h-secondary), 90%, 50%);
+  --secondary-hover: hsl(var(--h-secondary), 95%, 55%);
+
+  --accent-color: hsl(var(--h-accent), 90%, 60%);
+
+  --bg-color: hsl(var(--h-bg), 47%, 7%);
+  --surface-color: hsl(var(--h-bg), 45%, 12%);
+  --surface-hover: hsl(var(--h-bg), 40%, 18%);
+
+  --text-main: hsl(210, 40%, 98%);
+  --text-muted: hsl(215, 25%, 70%);
+  --border-color: hsla(215, 30%, 30%, 0.4);
+
+  /* Glassmorphism Refined */
+  --glass-bg: hsla(var(--h-bg), 45%, 15%, 0.65);
+  --glass-border: hsla(0, 0%, 100%, 0.08);
+  --glass-shadow: 0 8px 32px 0 hsla(0, 0%, 0%, 0.5);
+
+  /* Shadows */
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  --shadow-primary: 0 0 20px 0 hsla(var(--h-primary), 80%, 60%, 0.3);
+
+  /* Radii */
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-bounce: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+.logo {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-hover);
+  border-radius: var(--radius-full);
+  border: 3px solid var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
+
+/* Reusable Components Polish */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  transition: var(--transition-bounce);
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  box-shadow: var(--shadow-primary);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 20px -5px hsla(var(--h-primary), 80%, 60%, 0.5);
+}
+
+.btn-secondary {
+  background: var(--surface-hover);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+}
+
+.btn-secondary:hover {
+  background: var(--border-color);
+  transform: translateY(-2px);
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0 hsla(var(--h-primary), 80%, 60%, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 15px hsla(var(--h-primary), 80%, 60%, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 hsla(var(--h-primary), 80%, 60%, 0);
+  }
+}
+
+.animate-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.glow {
+  animation: pulse-glow 2s infinite;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
