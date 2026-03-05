@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Sparkles, Filter } from 'lucide-react';
+import { ArrowRight, Sparkles, Filter, ShieldCheck, Zap, Globe } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import api from '../services/api';
 import './Home.css';
@@ -35,37 +35,53 @@ const Home = () => {
                 <div className="mesh-gradient"></div>
                 <div className="container hero-container animate-up">
                     <div className="badge-wrapper">
-                        <span className="hero-badge"><Sparkles size={14} /> Powered by Kubernetes</span>
+                        <span className="hero-badge"><Sparkles size={14} /> The Next Evolution of Shopping</span>
                     </div>
-                    <h1>The Future of <span className="text-gradient">Commerce</span> is Here</h1>
-                    <p>Experience the ultimate cloud-native shopping ecosystem. High-performance microservices, premium goods, and a state-of-the-art interface.</p>
+                    <h1>Your Digital <span className="text-gradient">Experience</span> Reimagined</h1>
+                    <p>Discover premium products powered by a high-performance cloud ecosystem. Seamless, secure, and built for the future of commerce.</p>
                     <div className="hero-cta">
                         <button className="btn btn-primary glow">
-                            Explore Catalog <ArrowRight size={18} />
+                            Shop Now <ArrowRight size={18} />
                         </button>
-                        <button className="btn btn-secondary">System Status</button>
+                        <button className="btn btn-secondary">Watch Demo</button>
+                    </div>
+
+                    <div className="hero-highlights">
+                        <div className="highlight-item">
+                            <ShieldCheck size={20} />
+                            <span>Secure Payment</span>
+                        </div>
+                        <div className="highlight-item">
+                            <Zap size={20} />
+                            <span>Fast Delivery</span>
+                        </div>
+                        <div className="highlight-item">
+                            <Globe size={20} />
+                            <span>Global Network</span>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <section className="catalog-section container">
+            <section className="catalog-section container section-padding">
                 <div className="section-header">
                     <div className="header-info">
-                        <h2 className="section-title">Featured Products</h2>
-                        <p className="section-subtitle">Curated premium goods from our global cloud network.</p>
+                        <h2 className="section-title">New Arrivals</h2>
+                        <p className="section-subtitle">Curated premium goods from our global microservices network.</p>
                     </div>
                     <div className="filter-controls glass">
                         <Filter size={18} />
                         <button className="active">All</button>
                         <button>Electronics</button>
                         <button>Audio</button>
+                        <button>Wearables</button>
                     </div>
                 </div>
 
                 {loading ? (
                     <div className="loading-state">
                         <div className="loader"></div>
-                        <p>Syncing catalog across clusters...</p>
+                        <p>Loading your personalized catalog...</p>
                     </div>
                 ) : (
                     <div className="product-grid">

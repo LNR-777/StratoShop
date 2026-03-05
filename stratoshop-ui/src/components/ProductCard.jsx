@@ -1,9 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Eye, Plus } from 'lucide-react';
+import { Eye, Plus } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 import './ProductCard.css';
 
 const ProductCard = ({ product }) => {
+    const { addToCart } = useCart();
+
     return (
         <div className="product-card group">
             <Link to={`/product/${product.id}`} className="card-image-wrapper">
@@ -40,7 +43,11 @@ const ProductCard = ({ product }) => {
                         <span className="amount">{product.price.toString().split('.')[0]}</span>
                         <span className="decimal">.{product.price.toString().split('.')[1] || '00'}</span>
                     </div>
-                    <button className="btn-add-cart glow-on-hover" title="Add to Cart">
+                    <button
+                        className="btn-add-cart glow-on-hover"
+                        title="Add to Cart"
+                        onClick={() => addToCart(product)}
+                    >
                         <Plus size={20} />
                     </button>
                 </div>

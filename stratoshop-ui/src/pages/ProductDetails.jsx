@@ -1,19 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ShoppingCart, ShieldCheck, Box, Info, Cpu } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, ShieldCheck, Box, Info, Cpu, Plus, Minus } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 import api from '../services/api';
 import './ProductDetails.css';
 
 const ProductDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { addToCart } = useCart();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [quantity, setQuantity] = useState(1);
 
     useEffect(() => {
         fetchProduct();
         window.scrollTo(0, 0);
     }, [id]);
+
+    const handleQuantity = (val) => {
+        if (val < 1) return;
+        setQuantity(val);
+    };
+
+    const handleAddToCart = () => {
+        addToCart({ ...product, quantity });
+    };
 
     const fetchProduct = async () => {
         try {
@@ -90,11 +102,16 @@ const ProductDetails = () => {
                         </div>
 
                         <div className="action-row">
-                            <button className="btn btn-primary buy-btn-large glow">
+                            <div className="quantity-selector-large glass">
+                                <button onClick={() => handleQuantity(quantity - 1)}><Minus size={18} /></button>
+                                <span>{quantity}</span>
+                                <button onClick={() => handleQuantity(quantity + 1)}><Plus size={18} /></button>
+                            </div>
+                            <button
+                                className="btn btn-primary buy-btn-large glow"
+                                onClick={handleAddToCart}
+                            >
                                 <ShoppingCart size={22} /> Add to Collection
-                            </button>
-                            <button className="btn btn-secondary wishlist-btn">
-                                <Info size={22} />
                             </button>
                         </div>
                     </div>

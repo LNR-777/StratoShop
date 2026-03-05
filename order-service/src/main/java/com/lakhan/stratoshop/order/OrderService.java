@@ -55,11 +55,12 @@ public class OrderService {
                 throw new RuntimeException("Insufficient stock for product: " + product.getName());
             }
 
-            // In a real microservice system, stock update would be an async message or a
-            // separate PUT request. For this demo, we assume order placement logic is
-            // handled.
-            // (Note: To keep this demo simple, we'll skip the remote stock update for now
-            // or let the user implement it as an advanced task).
+            // Sync stock update with Product Service
+            ApiResponse<Void> stockUpdateResponse = productClient.updateStock(product.getId(),
+                    itemRequest.getQuantity());
+            if (!stockUpdateResponse.isSuccess()) {
+                throw new RuntimeException("Failed to update stock for product: " + product.getName());
+            }
 
             OrderItem orderItem = OrderItem.builder()
                     .order(order)

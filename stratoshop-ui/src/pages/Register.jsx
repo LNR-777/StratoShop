@@ -1,35 +1,29 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, ArrowRight, Shield, ShieldCheck } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useNavigate, Link } from 'react-router-dom';
+import { Mail, Lock, User, ArrowRight, ShieldCheck } from 'lucide-react';
 import api from '../services/api';
 import './Auth.css';
 
-const Auth = () => {
+const Register = () => {
     const [formData, setFormData] = useState({
         username: '',
+        email: '',
         password: '',
     });
     const [msg, setMsg] = useState({ text: '', type: '' });
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { login: authLogin } = useAuth();
 
-    const handleLogin = async (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
         setLoading(true);
         setMsg({ text: '', type: '' });
         try {
-            const res = await api.post('/auth/login', {
-                username: formData.username,
-                password: formData.password,
-            });
-
-            const authData = res.data.data;
-            if (authData && authData.token) {
-                authLogin(authData.username, authData.token);
-                navigate('/');
-            }
+            await api.post('/users/register', formData);
+            setMsg({ text: 'Neural Profile Initialized. Redirecting to login...', type: 'success' });
+            setTimeout(() => {
+                navigate('/login');
+            }, 2000);
         } catch (err) {
             setMsg({
                 text: err.response?.data?.message || 'Access Denied. Check credentials.',
@@ -51,20 +45,31 @@ const Auth = () => {
                 <div className="auth-card glass">
                     <div className="auth-header">
                         <div className="auth-icon-circle">
-                            <Shield size={32} />
+                            <ShieldCheck size={32} />
                         </div>
-                        <h2>Identity Link</h2>
-                        <p>Sign in to access the Strato network.</p>
+                        <h2>New Protocol</h2>
+                        <p>Initialize your cloud-native profile.</p>
                     </div>
 
-                    <form onSubmit={handleLogin} className="auth-form">
+                    <form onSubmit={handleRegister} className="auth-form">
                         <div className="input-group">
                             <label><User size={16} /> Username</label>
                             <input
                                 type="text"
-                                placeholder="enter username"
+                                placeholder="choose a username"
                                 value={formData.username}
                                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                                required
+                            />
+                        </div>
+
+                        <div className="input-group">
+                            <label><Mail size={16} /> Email</label>
+                            <input
+                                type="email"
+                                placeholder="user@strato.com"
+                                value={formData.email}
+                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 required
                             />
                         </div>
@@ -81,7 +86,7 @@ const Auth = () => {
                         </div>
 
                         <button type="submit" className="btn btn-primary auth-btn glow" disabled={loading}>
-                            {loading ? 'Authorizing...' : 'Authorize Access'} <ArrowRight size={18} />
+                            {loading ? 'Initializing...' : 'Register Profile'} <ArrowRight size={18} />
                         </button>
                     </form>
 
@@ -92,8 +97,8 @@ const Auth = () => {
                     )}
 
                     <div className="auth-footer">
-                        <span>No access key?</span>
-                        <Link to="/register" className="toggle-btn">Create Profile</Link>
+                        <span>Profile already active?</span>
+                        <Link to="/login" className="toggle-btn">Link Identity</Link>
                     </div>
                 </div>
             </div>
@@ -101,4 +106,4 @@ const Auth = () => {
     );
 };
 
-export default Auth;
+export default Register;

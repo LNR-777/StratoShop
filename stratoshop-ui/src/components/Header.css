@@ -103,9 +103,10 @@
 }
 
 .search-bar:focus-within {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.12);
     border-color: var(--primary-color);
-    width: 250px;
+    width: 320px;
+    box-shadow: 0 0 15px hsla(var(--h-primary), 80%, 60%, 0.2);
 }
 
 .search-bar input {
@@ -113,8 +114,51 @@
     border: none;
     color: var(--text-main);
     font-size: 0.9rem;
-    width: 150px;
+    width: 200px;
     outline: none;
+}
+
+.nav-dropdown {
+    position: relative;
+    padding: 0.5rem 0;
+}
+
+.dropdown-content {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 200px;
+    border-radius: var(--radius-md);
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: var(--transition-smooth);
+}
+
+.nav-dropdown:hover .dropdown-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-content a {
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--text-muted);
+}
+
+.dropdown-content a:hover {
+    background: var(--surface-hover);
+    color: var(--primary-color);
+}
+
+.user-menu-wrapper {
+    position: relative;
 }
 
 .user-profile {
@@ -129,9 +173,59 @@
     transition: var(--transition-bounce);
 }
 
-.user-profile:hover {
-    background: var(--border-color);
-    transform: scale(1.05);
+.username-text {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.user-dropdown-nav {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.75rem;
+    min-width: 160px;
+    border-radius: var(--radius-md);
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: var(--transition-smooth);
+}
+
+.user-menu-wrapper:hover .user-dropdown-nav {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.user-dropdown-nav a,
+.logout-btn-inline {
+    padding: 0.6rem 0.85rem;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: left;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.user-dropdown-nav a:hover,
+.logout-btn-inline:hover {
+    background: var(--surface-hover);
+    color: var(--primary-color);
+}
+
+.logout-btn-inline:hover {
+    color: var(--accent-color);
 }
 
 .avatar {

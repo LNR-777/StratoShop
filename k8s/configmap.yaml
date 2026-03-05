@@ -8,4 +8,7 @@ data:
   USER_DB_NAME: "stratoshop_user_db"
   PRODUCT_DB_NAME: "stratoshop_product_db"
   ORDER_DB_NAME: "stratoshop_order_db"
+  USER_DB_URL: "jdbc:mysql://user-db:3306/stratoshop_user_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
+  PRODUCT_DB_URL: "jdbc:mysql://product-db:3306/stratoshop_product_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
+  ORDER_DB_URL: "jdbc:mysql://order-db:3306/stratoshop_order_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
   MYSQL_USER: "root"

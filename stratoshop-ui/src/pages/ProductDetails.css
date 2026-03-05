@@ -165,6 +165,35 @@
     font-size: 1.1rem;
 }
 
+.quantity-selector-large {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.5rem 1.5rem;
+    border-radius: var(--radius-full);
+}
+
+.quantity-selector-large button {
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: var(--transition-smooth);
+}
+
+.quantity-selector-large button:hover {
+    color: var(--primary-color);
+}
+
+.quantity-selector-large span {
+    font-size: 1.25rem;
+    font-weight: 800;
+    min-width: 2rem;
+    text-align: center;
+}
+
 .wishlist-btn {
     padding: 1.25rem;
 }

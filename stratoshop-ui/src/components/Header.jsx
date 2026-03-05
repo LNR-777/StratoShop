@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, User, Search, Menu, LogOut, ChevronDown } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, ChevronDown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import './Header.css';
 
 const Header = () => {
     const { user, logout, isAuthenticated } = useAuth();
+    const { getCartCount } = useCart();
     const [scrolled, setScrolled] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const location = useLocation();
 
     useEffect(() => {
@@ -16,6 +19,11 @@ const Header = () => {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        console.log('Searching for:', searchQuery);
+    };
 
     return (
         <header className={`header ${scrolled ? 'scrolled glass' : ''}`}>
@@ -29,24 +37,36 @@ const Header = () => {
                     <Link to="/orders" className={location.pathname === '/orders' ? 'active' : ''}>Orders</Link>
                     <div className="nav-dropdown">
                         <span>Explore <ChevronDown size={14} /></span>
+                        <div className="dropdown-content glass">
+                            <Link to="/category/electronics">Electronics</Link>
+                            <Link to="/category/fashion">Fashion</Link>
+                            <Link to="/category/home">Home & Living</Link>
+                        </div>
                     </div>
                 </nav>
 
                 <div className="header-actions">
-                    <div className="search-bar glass">
+                    <form className="search-bar glass" onSubmit={handleSearch}>
                         <Search size={18} />
-                        <input type="text" placeholder="Search products..." />
-                    </div>
+                        <input
+                            type="text"
+                            placeholder="Search products..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </form>
 
                     {isAuthenticated ? (
                         <div className="user-menu-wrapper">
                             <div className="user-profile glow-on-hover">
-                                <div className="avatar">{user ? user[0].toUpperCase() : 'U'}</div>
-                                <span>{user}</span>
+                                <div className="avatar">{user?.username ? user.username[0].toUpperCase() : 'U'}</div>
+                                <span className="username-text">{user?.username}</span>
+                                <div className="user-dropdown-nav glass">
+                                    <Link to="/profile">Profile</Link>
+                                    <Link to="/orders">My Orders</Link>
+                                    <button onClick={logout} className="logout-btn-inline">Logout</button>
+                                </div>
                             </div>
-                            <button onClick={logout} className="icon-btn logout-btn" title="Logout">
-                                <LogOut size={20} />
-                            </button>
                         </div>
                     ) : (
                         <Link to="/login" className="btn btn-primary login-btn">
@@ -56,7 +76,7 @@ const Header = () => {
 
                     <Link to="/cart" className="icon-btn cart-btn">
                         <ShoppingCart size={22} />
-                        <span className="badge">0</span>
+                        {getCartCount() > 0 && <span className="badge">{getCartCount()}</span>}
                     </Link>
 
                     <button className="icon-btn menu-btn">

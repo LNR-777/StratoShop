@@ -21,6 +21,7 @@
         radial-gradient(at 50% 50%, hsla(var(--h-primary), 80%, 60%, 0.05) 0px, transparent 50%);
     filter: blur(80px);
     z-index: -1;
+    pointer-events: none;
 }
 
 .hero-container {
@@ -70,18 +71,29 @@
     line-height: 1.6;
 }
 
-.hero-cta {
+.hero-highlights {
     display: flex;
-    gap: 1.5rem;
+    gap: 3rem;
+    margin-top: 4rem;
+    padding: 1.5rem 3rem;
+    border-radius: var(--radius-full);
 }
 
-.hero-cta button {
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
+.highlight-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.highlight-item svg {
+    color: var(--primary-color);
 }
 
 .catalog-section {
-    margin-top: 4rem;
+    margin-top: 2rem;
 }
 
 .section-header {

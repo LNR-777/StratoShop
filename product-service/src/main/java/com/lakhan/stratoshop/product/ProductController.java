@@ -48,4 +48,11 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.ok(ApiResponse.success("Product deleted successfully", null));
     }
+
+    @PutMapping("/{id}/stock")
+    @Operation(summary = "Update product stock", description = "Adjusts the stock level of a product.")
+    public ResponseEntity<ApiResponse<Void>> updateStock(@PathVariable Long id, @RequestParam Integer quantity) {
+        productService.updateStock(id, quantity);
+        return ResponseEntity.ok(ApiResponse.success("Stock updated successfully", null));
+    }
 }

@@ -37,6 +37,7 @@ public class AuthController {
                 .token(token)
                 .username(user.getUsername())
                 .role(user.getRole().name())
+                .userId(user.getId())
                 .build();
 
         return ResponseEntity.ok(ApiResponse.success("Login successful", response));
