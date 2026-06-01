@@ -41,3 +41,6 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_SERVER_URL:http://discovery-server:8761/eureka/}
+
+jwt:
+  secret: ${JWT_SECRET}
