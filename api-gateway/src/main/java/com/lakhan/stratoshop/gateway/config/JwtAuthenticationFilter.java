@@ -3,6 +3,7 @@ package com.lakhan.stratoshop.gateway.config;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -20,8 +21,11 @@ import java.util.function.Predicate;
 @Component
 public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
-    private static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private final Key key;
+
+    public JwtAuthenticationFilter(@Value("${jwt.secret}") String secret) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -54,11 +58,11 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
                         .parseClaimsJws(token)
                         .getBody();
 
-                // You can add logic to populate headers with user details/role here
-                exchange.getRequest().mutate()
+                ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
                         .header("loggedInUser", claims.getSubject())
                         .header("role", String.valueOf(claims.get("role")))
                         .build();
+                return chain.filter(exchange.mutate().request(mutatedRequest).build());
 
             } catch (Exception e) {
                 return onError(exchange, "Invalid Token", HttpStatus.UNAUTHORIZED);

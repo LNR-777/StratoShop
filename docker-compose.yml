@@ -26,6 +26,7 @@ services:
       retries: 5
     environment:
       - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
+      - JWT_SECRET=${JWT_SECRET}
     depends_on:
       discovery-server:
         condition: service_healthy
@@ -36,12 +37,12 @@ services:
     image: mysql:8.0
     container_name: user-db
     environment:
-      - MYSQL_ROOT_PASSWORD=lakhan
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=stratoshop_user_db
     ports:
       - "3307:3306"
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-plakhan" ]
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -p$${MYSQL_ROOT_PASSWORD}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -62,8 +63,9 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://user-db:3306/stratoshop_user_db?createDatabaseIfNotExist=true&useSSL=false
       - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=lakhan
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
+      - JWT_SECRET=${JWT_SECRET}
     depends_on:
       user-db:
         condition: service_healthy
@@ -76,12 +78,12 @@ services:
     image: mysql:8.0
     container_name: product-db
     environment:
-      - MYSQL_ROOT_PASSWORD=lakhan
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=stratoshop_product_db
     ports:
       - "3308:3306"
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-plakhan" ]
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -p$${MYSQL_ROOT_PASSWORD}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -102,7 +104,7 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://product-db:3306/stratoshop_product_db?createDatabaseIfNotExist=true&useSSL=false
       - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=lakhan
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
     depends_on:
       product-db:
@@ -116,12 +118,12 @@ services:
     image: mysql:8.0
     container_name: order-db
     environment:
-      - MYSQL_ROOT_PASSWORD=lakhan
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=stratoshop_order_db
     ports:
       - "3309:3306"
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-plakhan" ]
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -p$${MYSQL_ROOT_PASSWORD}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -142,7 +144,7 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://order-db:3306/stratoshop_order_db?createDatabaseIfNotExist=true&useSSL=false
       - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=lakhan
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
     depends_on:
       order-db:
