@@ -29,10 +29,8 @@ public class UserService {
         // Hash the password before saving
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        // Default role for new registrations
-        if (user.getRole() == null) {
-            user.setRole(UserRole.CUSTOMER);
-        }
+        // Public registration should never allow privilege assignment from the request body.
+        user.setRole(UserRole.CUSTOMER);
 
         return userRepository.save(user);
     }

@@ -25,6 +25,11 @@ spec:
             configMapKeyRef:
               name: stratoshop-config
               key: EUREKA_SERVER_URL
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: stratoshop-secrets
+              key: JWT_SECRET
 ---
 apiVersion: v1
 kind: Service

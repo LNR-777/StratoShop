@@ -24,23 +24,25 @@ public class UserController {
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user", description = "Creates a new user account with CUSTOMER role by default.")
-    public ResponseEntity<ApiResponse<User>> register(@Valid @RequestBody User user) {
+    public ResponseEntity<ApiResponse<UserResponse>> register(@Valid @RequestBody User user) {
         User registeredUser = userService.registerUser(user);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("User registered successfully", registeredUser));
+                .body(ApiResponse.success("User registered successfully", UserResponse.from(registeredUser)));
     }
 
     @GetMapping
     @Operation(summary = "Get all users", description = "Retrieves a list of all registered users.")
-    public ResponseEntity<ApiResponse<List<User>>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsers() {
+        List<UserResponse> users = userService.getAllUsers().stream()
+                .map(UserResponse::from)
+                .toList();
         return ResponseEntity.ok(ApiResponse.success("Users retrieved", users));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get user by ID", description = "Fetches a single user's details by their database ID.")
-    public ResponseEntity<ApiResponse<User>> getUserById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable Long id) {
         User user = userService.getUserById(id);
-        return ResponseEntity.ok(ApiResponse.success("User found", user));
+        return ResponseEntity.ok(ApiResponse.success("User found", UserResponse.from(user)));
     }
 }
