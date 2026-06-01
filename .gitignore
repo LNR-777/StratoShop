@@ -16,6 +16,11 @@ dist/
 *.log
 order-logs.txt
 product-logs.txt
+*-logs*.txt
+*error*.txt
+
+# Local environment
+.env
 
 # IDEs
 .idea/

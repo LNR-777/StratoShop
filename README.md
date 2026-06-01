@@ -52,7 +52,13 @@ StratoShop/
 
 ## Run With Docker Compose
 
-Make sure Docker is running, then start the full system:
+Make sure Docker is running, then create a local environment file:
+
+```bash
+cp .env.example .env
+```
+
+Update `.env` with strong local values, then start the full system:
 
 ```bash
 docker compose up --build
