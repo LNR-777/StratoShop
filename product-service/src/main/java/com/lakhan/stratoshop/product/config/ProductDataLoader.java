@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -19,22 +21,34 @@ public class ProductDataLoader implements CommandLineRunner {
 
     private final ProductRepository productRepository;
 
+
     @Override
     public void run(String... args) {
         List<Product> catalog = buildCatalog();
-        Set<String> expectedNames = catalog.stream().map(Product::getName).collect(Collectors.toSet());
-        Set<String> existingNames = productRepository.findAll().stream()
-                .map(Product::getName)
-                .collect(Collectors.toSet());
 
-        if (existingNames.equals(expectedNames)) {
-            log.info("Product catalog already seeded ({} items).", existingNames.size());
-            return;
+        Map<String, Product> catalogByName = catalog.stream()
+                .collect(Collectors.toMap(Product::getName, p -> p));
+
+        for (Product existing : productRepository.findAll()) {
+            if (isImageFixTarget(existing.getName())) {
+                Product seeded = catalogByName.get(existing.getName());
+
+                if (seeded != null
+                        && !Objects.equals(existing.getImageUrl(), seeded.getImageUrl())) {
+                    existing.setImageUrl(seeded.getImageUrl());
+                    productRepository.save(existing);
+
+                    log.info("Updated image URL for: {}", existing.getName());
+                }
+            }
         }
 
-        productRepository.deleteAll();
-        productRepository.saveAll(catalog);
-        log.info("Seeded {} products into the StratoShop catalog.", catalog.size());
+        log.info("Product image URL check completed.");
+    }
+
+    private boolean isImageFixTarget(String name) {
+        return "Philips Hue Starter Kit".equals(name)
+                || "Casper Original Pillow".equals(name);
     }
 
     private List<Product> buildCatalog() {
@@ -82,11 +96,11 @@ public class ProductDataLoader implements CommandLineRunner {
                 product("Philips Hue Starter Kit",
                         "Philips Hue smart lighting kit with color bulbs and app/voice control for a modern home.",
                         "199.99", 30, "Home & Living",
-                        "https://images.unsplash.com/photo-1507473883502-3fe871df675a?auto=format&fit=crop&w=900&q=80"),
+                        "https://images.unsplash.com/photo-1736488517606-ff7b014c07a6?auto=format&fit=crop&w=900&q=80"),
                 product("Casper Original Pillow",
                         "Casper supportive pillow with a breathable design for balanced comfort and better sleep.",
                         "89.00", 90, "Home & Living",
-                        "https://images.unsplash.com/photo-1584100936595-0494c1dfa596?auto=format&fit=crop&w=900&q=80")
+                        "https://images.unsplash.com/photo-1620751852890-a89137ec78b9?auto=format&fit=crop&w=900&q=80")
         );
     }
 
