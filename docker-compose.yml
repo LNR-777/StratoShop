@@ -69,6 +69,7 @@ services:
       start_period: 90s
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://user-db:3306/stratoshop_user_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=${MYSQL_ROOT_PASSWORD:-lakhan}
       - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
     depends_on:
