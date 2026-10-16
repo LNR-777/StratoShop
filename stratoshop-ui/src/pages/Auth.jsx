@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Lock, User, ArrowRight, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
@@ -12,7 +12,10 @@ const Auth = () => {
     const [msg, setMsg] = useState({ text: '', type: '' });
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
     const { login } = useAuth();
+    // If user was redirected here from a protected page, go back there after login
+    const from = location.state?.from?.pathname || '/';
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -20,7 +23,7 @@ const Auth = () => {
         setMsg({ text: '', type: '' });
         const result = await login(formData.username, formData.password);
         if (result.success) {
-            navigate('/');
+            navigate(from, { replace: true });
         } else {
             setMsg({ text: result.message || 'Invalid username or password.', type: 'error' });
         }

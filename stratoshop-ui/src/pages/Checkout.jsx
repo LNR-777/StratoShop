@@ -32,7 +32,7 @@ const Checkout = () => {
         try {
             // Mapping frontend cart to backend OrderRequest
             const orderRequest = {
-                userId: user?.userId || 1, // Use state-managed userId
+                userId: user.userId,
                 items: cart.map(item => ({
                     productId: item.id,
                     quantity: item.quantity
