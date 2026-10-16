@@ -7,9 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * Service class for Product business logic.
- */
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -21,17 +18,28 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    @Transactional(readOnly = true)
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public Product getProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
     }
 
+    @Transactional(readOnly = true)
     public List<Product> getProductsByCategory(String category) {
-        return productRepository.findByCategory(category);
+        return productRepository.findByCategoryIgnoreCaseOrderByNameAsc(category);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Product> searchProducts(String query) {
+        if (query == null || query.isBlank()) {
+            return getAllProducts();
+        }
+        return productRepository.searchCatalog(query.trim());
     }
 
     @Transactional
@@ -44,12 +52,12 @@ public class ProductService {
 
     @Transactional
     public void updateStock(Long productId, Integer quantity) {
-        Product product = getProductById(productId);
+        Product product = productRepository.findByIdForUpdate(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
         int newStock = product.getStockQuantity() - quantity;
         if (newStock < 0) {
-            throw new RuntimeException("Insufficient stock for product: " + product.getName());
+            throw new IllegalStateException("Insufficient stock for product: " + product.getName());
         }
         product.setStockQuantity(newStock);
-        productRepository.save(product);
     }
 }

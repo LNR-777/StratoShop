@@ -1,8 +1,9 @@
 import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
+import Catalog from './pages/Catalog';
 import Auth from './pages/Auth';
 import Register from './pages/Register';
 import Orders from './pages/Orders';
@@ -18,6 +19,7 @@ function App() {
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/category/:slug" element={<Catalog />} />
           <Route path="/login" element={<Auth />} />
           <Route path="/register" element={<Register />} />
           <Route path="/cart" element={<Cart />} />

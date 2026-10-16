@@ -20,7 +20,7 @@ const Register = () => {
         setMsg({ text: '', type: '' });
         try {
             await api.post('/users/register', formData);
-            setMsg({ text: 'Neural Profile Initialized. Redirecting to login...', type: 'success' });
+            setMsg({ text: 'Account created. Redirecting to login...', type: 'success' });
             setTimeout(() => {
                 navigate('/login');
             }, 2000);
@@ -47,8 +47,8 @@ const Register = () => {
                         <div className="auth-icon-circle">
                             <ShieldCheck size={32} />
                         </div>
-                        <h2>New Protocol</h2>
-                        <p>Initialize your cloud-native profile.</p>
+                        <h2>Create account</h2>
+                        <p>Register to place orders and track purchases.</p>
                     </div>
 
                     <form onSubmit={handleRegister} className="auth-form">
@@ -78,7 +78,8 @@ const Register = () => {
                             <label><Lock size={16} /> Password</label>
                             <input
                                 type="password"
-                                placeholder="••••••••"
+                                placeholder="at least 8 characters"
+                                minLength={8}
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                 required

@@ -11,9 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * REST Controller for Product-related operations.
- */
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
@@ -23,7 +20,7 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    @Operation(summary = "Add a new product", description = "Creates a new product in the catalog.")
+    @Operation(summary = "Add a new product")
     public ResponseEntity<ApiResponse<Product>> addProduct(@Valid @RequestBody Product product) {
         Product savedProduct = productService.saveProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -31,26 +28,36 @@ public class ProductController {
     }
 
     @GetMapping
-    @Operation(summary = "Get all products", description = "Retrieves the full product catalog.")
-    public ResponseEntity<ApiResponse<List<Product>>> getAllProducts() {
-        return ResponseEntity.ok(ApiResponse.success("Products retrieved", productService.getAllProducts()));
+    @Operation(summary = "Get products", description = "Filter by category or search name/description.")
+    public ResponseEntity<ApiResponse<List<Product>>> getAllProducts(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String search) {
+        List<Product> products;
+        if (search != null && !search.isBlank()) {
+            products = productService.searchProducts(search);
+        } else if (category != null && !category.isBlank()) {
+            products = productService.getProductsByCategory(category);
+        } else {
+            products = productService.getAllProducts();
+        }
+        return ResponseEntity.ok(ApiResponse.success("Products retrieved", products));
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get product by ID", description = "Fetches details of a specific product.")
+    @Operation(summary = "Get product by ID")
     public ResponseEntity<ApiResponse<Product>> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success("Product found", productService.getProductById(id)));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete product", description = "Removes a product from the catalog.")
+    @Operation(summary = "Delete product")
     public ResponseEntity<ApiResponse<String>> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.ok(ApiResponse.success("Product deleted successfully", null));
     }
 
     @PutMapping("/{id}/stock")
-    @Operation(summary = "Update product stock", description = "Adjusts the stock level of a product.")
+    @Operation(summary = "Reduce product stock")
     public ResponseEntity<ApiResponse<Void>> updateStock(@PathVariable Long id, @RequestParam Integer quantity) {
         productService.updateStock(id, quantity);
         return ResponseEntity.ok(ApiResponse.success("Stock updated successfully", null));

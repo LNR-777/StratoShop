@@ -6,6 +6,8 @@ import './ProductCard.css';
 
 const ProductCard = ({ product }) => {
     const { addToCart } = useCart();
+    const priceValue = Number(product.price);
+    const [whole, decimal = '00'] = priceValue.toFixed(2).split('.');
 
     return (
         <div className="product-card group">
@@ -40,8 +42,8 @@ const ProductCard = ({ product }) => {
                 <div className="card-footer">
                     <div className="card-price-tag">
                         <span className="currency">$</span>
-                        <span className="amount">{product.price.toString().split('.')[0]}</span>
-                        <span className="decimal">.{product.price.toString().split('.')[1] || '00'}</span>
+                        <span className="amount">{whole}</span>
+                        <span className="decimal">.{decimal}</span>
                     </div>
                     <button
                         className="btn-add-cart glow-on-hover"

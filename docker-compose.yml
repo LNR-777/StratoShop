@@ -3,13 +3,15 @@ services:
     build: ./discovery-server
     image: lnr777/stratoshop-discovery-server:latest
     container_name: discovery-server
+    restart: unless-stopped
     ports:
       - "8761:8761"
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:8761/eureka/apps" ]
-      interval: 10s
+      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
+      interval: 15s
       timeout: 5s
-      retries: 5
+      retries: 8
+      start_period: 40s
     networks:
       - stratoshop-network
 
@@ -17,15 +19,18 @@ services:
     build: ./api-gateway
     image: lnr777/stratoshop-api-gateway:latest
     container_name: api-gateway
+    restart: unless-stopped
     ports:
       - "8080:8080"
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:8080/actuator/health" ]
-      interval: 10s
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 15s
       timeout: 5s
-      retries: 5
+      retries: 8
+      start_period: 60s
     environment:
       - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:80,http://localhost:3000}
     depends_on:
       discovery-server:
         condition: service_healthy
@@ -35,16 +40,17 @@ services:
   user-db:
     image: mysql:8.0
     container_name: user-db
+    restart: unless-stopped
     environment:
-      - MYSQL_ROOT_PASSWORD=lakhan
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-lakhan}
       - MYSQL_DATABASE=stratoshop_user_db
     ports:
       - "3307:3306"
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-plakhan" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-lakhan}" ]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 8
     networks:
       - stratoshop-network
 
@@ -52,17 +58,18 @@ services:
     build: ./user-service
     image: lnr777/stratoshop-user-service:latest
     container_name: user-service
+    restart: unless-stopped
     ports:
       - "8081:8081"
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:8081/actuator/health" ]
-      interval: 10s
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+      interval: 15s
       timeout: 5s
-      retries: 5
+      retries: 8
+      start_period: 90s
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://user-db:3306/stratoshop_user_db?createDatabaseIfNotExist=true&useSSL=false
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=lakhan
+      - SPRING_DATASOURCE_URL=jdbc:mysql://user-db:3306/stratoshop_user_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_ROOT_PASSWORD:-lakhan}
       - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
     depends_on:
       user-db:
@@ -75,16 +82,17 @@ services:
   product-db:
     image: mysql:8.0
     container_name: product-db
+    restart: unless-stopped
     environment:
-      - MYSQL_ROOT_PASSWORD=lakhan
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-lakhan}
       - MYSQL_DATABASE=stratoshop_product_db
     ports:
       - "3308:3306"
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-plakhan" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-lakhan}" ]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 8
     networks:
       - stratoshop-network
 
@@ -92,17 +100,19 @@ services:
     build: ./product-service
     image: lnr777/stratoshop-product-service:latest
     container_name: product-service
+    restart: unless-stopped
     ports:
       - "8082:8082"
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:8082/actuator/health" ]
-      interval: 10s
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
+      interval: 15s
       timeout: 5s
-      retries: 5
+      retries: 8
+      start_period: 90s
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://product-db:3306/stratoshop_product_db?createDatabaseIfNotExist=true&useSSL=false
+      - SPRING_DATASOURCE_URL=jdbc:mysql://product-db:3306/stratoshop_product_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=lakhan
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_ROOT_PASSWORD:-lakhan}
       - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
     depends_on:
       product-db:
@@ -115,16 +125,17 @@ services:
   order-db:
     image: mysql:8.0
     container_name: order-db
+    restart: unless-stopped
     environment:
-      - MYSQL_ROOT_PASSWORD=lakhan
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-lakhan}
       - MYSQL_DATABASE=stratoshop_order_db
     ports:
       - "3309:3306"
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-plakhan" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-lakhan}" ]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 8
     networks:
       - stratoshop-network
 
@@ -132,22 +143,40 @@ services:
     build: ./order-service
     image: lnr777/stratoshop-order-service:latest
     container_name: order-service
+    restart: unless-stopped
     ports:
       - "8083:8083"
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:8083/actuator/health" ]
-      interval: 10s
+      test: [ "CMD", "curl", "-f", "http://localhost:8083/actuator/health" ]
+      interval: 15s
       timeout: 5s
-      retries: 5
+      retries: 8
+      start_period: 90s
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://order-db:3306/stratoshop_order_db?createDatabaseIfNotExist=true&useSSL=false
+      - SPRING_DATASOURCE_URL=jdbc:mysql://order-db:3306/stratoshop_order_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=lakhan
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_ROOT_PASSWORD:-lakhan}
       - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
     depends_on:
       order-db:
         condition: service_healthy
       discovery-server:
+        condition: service_healthy
+    networks:
+      - stratoshop-network
+
+  stratoshop-ui:
+    build:
+      context: ./stratoshop-ui
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080/api}
+    image: lnr777/stratoshop-ui:latest
+    container_name: stratoshop-ui
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      api-gateway:
         condition: service_healthy
     networks:
       - stratoshop-network

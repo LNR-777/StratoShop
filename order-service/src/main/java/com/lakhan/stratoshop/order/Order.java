@@ -8,11 +8,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Order entity representing a purchase made by a user.
- */
 @Entity
-@Table(name = "orders")
+@Table(
+        name = "orders",
+        indexes = {
+                @Index(name = "idx_orders_user_id", columnList = "user_id"),
+                @Index(name = "idx_orders_order_date", columnList = "order_date")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -31,10 +34,13 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
+    @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal totalAmount;
 
-    private String status; // PENDING, PAID, SHIPPED, DELIVERED
+    @Column(nullable = false, length = 40)
+    private String status;
 
+    @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDate;
 
     public void addOrderItem(OrderItem item) {
