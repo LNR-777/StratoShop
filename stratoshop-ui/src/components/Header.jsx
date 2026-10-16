@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Search, ShoppingCart, User, Menu, ChevronDown } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Search, ShoppingCart, User, Menu, X, ChevronDown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import './Header.css';
@@ -10,7 +10,9 @@ const Header = () => {
     const { getCartCount } = useCart();
     const [scrolled, setScrolled] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [mobileOpen, setMobileOpen] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -22,8 +24,17 @@ const Header = () => {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        console.log('Searching for:', searchQuery);
+        if (searchQuery.trim()) {
+            navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+            setSearchQuery('');
+            setMobileOpen(false);
+        }
     };
+
+    // Close mobile menu whenever route changes
+    useEffect(() => {
+        setMobileOpen(false);
+    }, [location.pathname]);
 
     return (
         <header className={`header ${scrolled ? 'scrolled glass' : ''}`}>
@@ -79,11 +90,30 @@ const Header = () => {
                         {getCartCount() > 0 && <span className="badge">{getCartCount()}</span>}
                     </Link>
 
-                    <button className="icon-btn menu-btn">
-                        <Menu size={24} />
+                    <button className="icon-btn menu-btn" onClick={() => setMobileOpen(!mobileOpen)}>
+                        {mobileOpen ? <X size={24} /> : <Menu size={24} />}
                     </button>
                 </div>
             </div>
+
+            {/* Mobile navigation panel */}
+            {mobileOpen && (
+                <nav className="mobile-nav glass">
+                    <Link to="/">Home</Link>
+                    <Link to="/category/electronics">Electronics</Link>
+                    <Link to="/category/fashion">Fashion</Link>
+                    <Link to="/category/home">Home & Living</Link>
+                    <Link to="/orders">My Orders</Link>
+                    {isAuthenticated ? (
+                        <>
+                            <Link to="/profile">Profile</Link>
+                            <button onClick={logout} className="logout-btn-inline">Logout</button>
+                        </>
+                    ) : (
+                        <Link to="/login" className="btn btn-primary">Login</Link>
+                    )}
+                </nav>
+            )}
         </header>
     );
 };
