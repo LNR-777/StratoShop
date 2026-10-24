@@ -1,0 +1,288 @@
+{
+  "info": {
+    "name": "StratoShop API Collection",
+    "description": "Comprehensive API collection for StratoShop microservices architecture through the API Gateway (Port 8080). Includes authentication, product catalog, and order workflow.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/api",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "current_userId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication & Users",
+      "item": [
+        {
+          "name": "Register New Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"testuser@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "register"]
+            },
+            "description": "Registers a new user in the system with default ROLE_USER."
+          }
+        },
+        {
+          "name": "Login (Auto-captures JWT)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "    pm.collectionVariables.set('jwt_token', res.data.token);",
+                  "    if (res.data.userId) {",
+                  "        pm.collectionVariables.set('current_userId', res.data.userId.toString());",
+                  "    }",
+                  "    console.log('JWT Token successfully stored to collection variables.');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"SecurePass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Authenticates user and returns JWT token. The Postman test script automatically saves the token to the collection variable `jwt_token`."
+          }
+        },
+        {
+          "name": "Get User Profile by ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{current_userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{current_userId}}"]
+            },
+            "description": "Protected route: Returns user details by ID."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Product Catalog",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["products"]
+            },
+            "description": "Public route: Returns the list of all seeded catalog products."
+          }
+        },
+        {
+          "name": "Filter by Category (Electronics)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products?category=Electronics",
+              "host": ["{{baseUrl}}"],
+              "path": ["products"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "Electronics"
+                }
+              ]
+            },
+            "description": "Public route: Returns products filtered by category."
+          }
+        },
+        {
+          "name": "Search Products (Keyword)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products?search=MacBook",
+              "host": ["{{baseUrl}}"],
+              "path": ["products"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "MacBook"
+                }
+              ]
+            },
+            "description": "Public route: Searches across product names, descriptions, and categories."
+          }
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", "1"]
+            },
+            "description": "Public route: Returns detailed product info by ID."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Orders & Checkout",
+      "item": [
+        {
+          "name": "Create Order (Place Order)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{current_userId}},\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 1\n    },\n    {\n      \"productId\": 5,\n      \"quantity\": 2\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders"]
+            },
+            "description": "Protected route: Places an order. Order service validates user with User Service and checks/decrements stock with Product Service via OpenFeign."
+          }
+        },
+        {
+          "name": "Get Orders by User ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/user/{{current_userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "user", "{{current_userId}}"]
+            },
+            "description": "Protected route: Retrieves all order records for the specified user."
+          }
+        },
+        {
+          "name": "Get Order by Order ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "1"]
+            },
+            "description": "Protected route: Retrieves single order details including all items and total amount."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Actuator & Health",
+      "item": [
+        {
+          "name": "API Gateway Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/actuator/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["actuator", "health"]
+            },
+            "description": "Returns Spring Boot Actuator status for API Gateway."
+          }
+        }
+      ]
+    }
+  ]
+}

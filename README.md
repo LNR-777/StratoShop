@@ -140,6 +140,19 @@ Local dev storefront runs at `http://localhost:5173`.
 
 ---
 
+## API Testing & Documentation
+
+A ready-to-import Postman collection is included in [`postman/StratoShop.postman_collection.json`](postman/StratoShop.postman_collection.json):
+
+1. Open Postman -> **Import** -> Select `postman/StratoShop.postman_collection.json`.
+2. The collection includes:
+   - **Auth & Users:** Register, Login (with auto-extraction of JWT token to collection variables), User profile lookup.
+   - **Catalog:** All products, category filters, and keyword searches.
+   - **Orders:** Place order (calls inter-service Feign verification) and view order history.
+   - **Actuator:** Gateway health check.
+
+---
+
 ## Useful Commands
 
 ```bash
