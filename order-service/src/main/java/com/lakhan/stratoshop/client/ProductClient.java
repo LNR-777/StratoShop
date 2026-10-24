@@ -1,7 +1,6 @@
 package com.lakhan.stratoshop.client;
 
-import com.lakhan.stratoshop.common.ApiResponse;
-import com.lakhan.stratoshop.dto.ProductDTO;
+import com.lakhan.stratoshop.common.ProductApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ProductClient {
 
     @GetMapping("/api/products/{id}")
-    ApiResponse<ProductDTO> getProductById(@PathVariable("id") Long id);
+    ProductApiResponse getProductById(@PathVariable("id") Long id);
 
     @PutMapping("/api/products/{id}/stock")
-    ApiResponse<Void> updateStock(@PathVariable("id") Long id, @RequestParam("quantity") Integer quantity);
+    ProductApiResponse updateStock(@PathVariable("id") Long id, @RequestParam("quantity") Integer quantity);
 }

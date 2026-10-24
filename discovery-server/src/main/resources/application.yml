@@ -13,3 +13,12 @@ eureka:
 spring:
   application:
     name: discovery-server
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized

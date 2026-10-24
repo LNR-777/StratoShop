@@ -1,137 +1,120 @@
 # StratoShop
 
-StratoShop is a microservices-based e-commerce project built with Spring Boot, React, MySQL, Docker, and Kubernetes configuration files.
+Modern, enterprise-grade e-commerce platform built with Spring Boot microservices, React, Docker, and Kubernetes manifests.
 
-The project is split into independent backend services, an API gateway, a discovery server, and a React frontend.
+The system is split into decoupled backend microservices, a centralized API Gateway, Netflix Eureka service discovery, and a modern responsive React storefront.
 
-## Project Structure
+---
+
+## 🏛️ Architecture Overview
 
 ```text
 StratoShop/
-  discovery-server/   # Eureka service discovery
-  api-gateway/        # Spring Cloud Gateway entry point
-  user-service/       # Authentication and user APIs
-  product-service/    # Product APIs
-  order-service/      # Order APIs
-  stratoshop-ui/      # React frontend
-  docker-compose.yml  # Local multi-service setup
-  k8s/                # Kubernetes manifests
+├── discovery-server/    # Eureka Service Registry (Port 8761)
+├── api-gateway/         # Central API Gateway, CORS, JWT Routing (Port 8080)
+├── user-service/        # Auth, User Management, JWT Claims (Port 8081)
+├── product-service/     # Product Catalog, Categories, Auto-seeder (Port 8082)
+├── order-service/       # Order Processing & Feign Client Inter-service (Port 8083)
+├── stratoshop-ui/       # React + Vite SPA Storefront (Port 3000)
+├── docker-compose.yml   # Multi-container local orchestration
+└── k8s/                # Kubernetes Deployment & Service Manifests
 ```
 
-## Tech Stack
+---
+
+## 🛠️ Tech Stack
 
 ### Backend
-- Java 17
-- Spring Boot
-- Spring Cloud Gateway
-- Eureka Discovery Server
-- Spring Security
-- JWT authentication
-- Spring Data JPA
-- MySQL
+- **Java 17** & **Spring Boot 3.2**
+- **Spring Cloud Gateway** (Reactive routing, Global JWT filter, CORS handling)
+- **Netflix Eureka** (Dynamic service discovery & client-side load balancing)
+- **Spring Security 6** with stateless **JWT Authentication**
+- **OpenFeign** for synchronous microservice-to-microservice communication
+- **Spring Data JPA** & **MySQL 8.0**
 
 ### Frontend
-- React
-- Vite
-- JavaScript
-- CSS
+- **React 18** + **Vite**
+- **React Router 6** with Auth Guards (`ProtectedRoute`)
+- **Lucide React** Icons & Glassmorphism Design
+- **Axios** with JWT Request Interceptors
 
-### DevOps / Deployment
-- Docker
-- Docker Compose
-- Kubernetes manifests
+### Infrastructure & DevOps
+- **Docker & Docker Compose** (Health checks, depend-chains, isolated network)
+- **Nginx** (Alpine multi-stage production UI build)
+- **Kubernetes** manifests for container orchestration
 
-## Services
+---
 
-- `discovery-server` runs Eureka service discovery on port `8761`.
-- `api-gateway` routes requests through port `8080`.
-- `user-service` handles users and authentication on port `8081`.
-- `product-service` handles product data on port `8082`.
-- `order-service` handles order workflows on port `8083`.
-- `stratoshop-ui` contains the frontend application.
+## 🚀 Quick Start (Docker Compose)
 
-## Run With Docker Compose
+### Prerequisites
+- Docker Desktop
+- Git
 
-Make sure Docker is running, then create a local environment file:
-
+### 1. Clone & Setup Environment
 ```bash
-cp .env.example .env
+git clone https://github.com/LNR-777/StratoShop.git
+cd StratoShop
+copy .env.example .env   # Windows
+# cp .env.example .env   # macOS/Linux
 ```
 
-Update `.env` with strong local values, then start the full system:
-
+### 2. Start all services
 ```bash
-docker compose up --build
+docker compose up --build -d
 ```
+*Note: First-time startup builds all Maven microservices and pulls images (~5-10 minutes).*
 
-The compose setup includes MySQL containers for user, product, and order services.
+### 3. Service Dashboard & URLs
 
-Main service URLs:
+| Service | Endpoint | Details |
+|---|---|---|
+| **Storefront (UI)** | `http://localhost:3000` | Full React store & checkout |
+| **API Gateway** | `http://localhost:8080` | Entry point for all `/api/**` calls |
+| **Eureka Registry** | `http://localhost:8761` | Service discovery dashboard |
+| **User Service** | `http://localhost:8081` | Auth, Register & Profile |
+| **Product Service** | `http://localhost:8082` | Catalog & Search APIs |
+| **Order Service** | `http://localhost:8083` | Orders & Inventory management |
 
-- Eureka dashboard: http://localhost:8761
-- API Gateway: http://localhost:8080
-- User Service: http://localhost:8081
-- Product Service: http://localhost:8082
-- Order Service: http://localhost:8083
+---
 
-## Run Backend Services Manually
+## 💻 Local Development Mode (Hot Reload)
 
-Each backend service includes its own Maven wrapper.
-
-Example:
-
-```bash
-cd discovery-server
-./mvnw spring-boot:run
-```
-
-On Windows:
+To run the backend via Docker while running frontend locally for fast iterations:
 
 ```bash
-cd discovery-server
-mvnw.cmd spring-boot:run
-```
+# 1. Start backend microservices
+docker compose up -d user-db product-db order-db discovery-server api-gateway user-service product-service order-service
 
-Repeat the same pattern for:
-
-- `api-gateway`
-- `user-service`
-- `product-service`
-- `order-service`
-
-For manual runs, make sure the required MySQL databases are available and the service configuration matches your local database setup.
-
-## Run Frontend
-
-```bash
+# 2. Run React frontend
 cd stratoshop-ui
 npm install
 npm run dev
 ```
 
-Build frontend for production:
+Frontend runs on `http://localhost:5173`.
 
-```bash
-npm run build
-```
+---
 
-## Build Check
+## 📦 Seeded Product Catalog
 
-The backend services were checked with:
+The platform auto-seeds with verified, high-resolution catalog items across 3 primary categories:
+- **Electronics**: MacBook Air 15" M3, Samsung Galaxy S24 Ultra, Sony WH-1000XM5, iPad Air M2
+- **Fashion**: Nike Air Max 90, Levi's 501 Jeans, Ray-Ban Aviators, The North Face Jacket
+- **Home & Living**: Dyson V15 Detect, Nespresso Vertuo Next, Philips Hue Kit, Casper Original Pillow
 
-```bash
-mvnw.cmd -DskipTests package
-```
+---
 
-The frontend was checked with:
+## 🔐 Environment Variables
 
-```bash
-npm install
-npm run build
-```
+Key parameters configurable in `.env`:
+- `MYSQL_ROOT_PASSWORD` — Root credentials across microservice databases
+- `JWT_SECRET` — 256-bit cryptographic key shared between Gateway & User Service
+- `CORS_ALLOWED_ORIGINS` — Whitelisted origins for API Gateway
+- `VITE_API_URL` — Backend base URL consumed by the UI container
 
-## Notes
+---
 
-- This is a learning project for microservices, service discovery, API gateway routing, Docker, and Kubernetes basics.
-- The project is designed to be run as multiple services instead of a single Spring Boot application.
-- Kubernetes manifests are included for deployment practice and may need environment-specific changes before production use.
+## 📜 License
+
+Distributed under the MIT License.

@@ -18,18 +18,27 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     }, []);
 
+    const applySession = (authData) => {
+        const userData = {
+            username: authData.username,
+            role: authData.role,
+            userId: authData.userId,
+        };
+        localStorage.setItem('token', authData.token);
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+    };
+
     const login = async (username, password) => {
         try {
             const response = await api.post('/auth/login', { username, password });
-            const { token, role, username: resUsername, userId } = response.data.data;
-
-            const userData = { username: resUsername, role, userId };
-            localStorage.setItem('token', token);
-            localStorage.setItem('user', JSON.stringify(userData));
-            setUser(userData);
+            const authData = response.data.data;
+            if (!authData?.token) {
+                return { success: false, message: 'Login failed' };
+            }
+            applySession(authData);
             return { success: true };
         } catch (error) {
-            console.error('Login error:', error);
             return { success: false, message: error.response?.data?.message || 'Login failed' };
         }
     };
@@ -45,7 +54,6 @@ export const AuthProvider = ({ children }) => {
             await api.post('/users/register', userData);
             return { success: true };
         } catch (error) {
-            console.error('Registration error:', error);
             return { success: false, message: error.response?.data?.message || 'Registration failed' };
         }
     };

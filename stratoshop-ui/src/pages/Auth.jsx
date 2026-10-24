@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, ArrowRight, Shield, ShieldCheck } from 'lucide-react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { Lock, User, ArrowRight, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import api from '../services/api';
 import './Auth.css';
 
 const Auth = () => {
@@ -13,31 +12,22 @@ const Auth = () => {
     const [msg, setMsg] = useState({ text: '', type: '' });
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { login: authLogin } = useAuth();
+    const location = useLocation();
+    const { login } = useAuth();
+    // If user was redirected here from a protected page, go back there after login
+    const from = location.state?.from?.pathname || '/';
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
         setMsg({ text: '', type: '' });
-        try {
-            const res = await api.post('/auth/login', {
-                username: formData.username,
-                password: formData.password,
-            });
-
-            const authData = res.data.data;
-            if (authData && authData.token) {
-                authLogin(authData.username, authData.token);
-                navigate('/');
-            }
-        } catch (err) {
-            setMsg({
-                text: err.response?.data?.message || 'Access Denied. Check credentials.',
-                type: 'error'
-            });
-        } finally {
-            setLoading(false);
+        const result = await login(formData.username, formData.password);
+        if (result.success) {
+            navigate(from, { replace: true });
+        } else {
+            setMsg({ text: result.message || 'Invalid username or password.', type: 'error' });
         }
+        setLoading(false);
     };
 
     return (
@@ -53,8 +43,8 @@ const Auth = () => {
                         <div className="auth-icon-circle">
                             <Shield size={32} />
                         </div>
-                        <h2>Identity Link</h2>
-                        <p>Sign in to access the Strato network.</p>
+                        <h2>Sign in</h2>
+                        <p>Access your StratoShop account.</p>
                     </div>
 
                     <form onSubmit={handleLogin} className="auth-form">
@@ -81,7 +71,7 @@ const Auth = () => {
                         </div>
 
                         <button type="submit" className="btn btn-primary auth-btn glow" disabled={loading}>
-                            {loading ? 'Authorizing...' : 'Authorize Access'} <ArrowRight size={18} />
+                            {loading ? 'Signing in...' : 'Sign in'} <ArrowRight size={18} />
                         </button>
                     </form>
 
@@ -92,8 +82,8 @@ const Auth = () => {
                     )}
 
                     <div className="auth-footer">
-                        <span>No access key?</span>
-                        <Link to="/register" className="toggle-btn">Create Profile</Link>
+                        <span>New here?</span>
+                        <Link to="/register" className="toggle-btn">Create an account</Link>
                     </div>
                 </div>
             </div>

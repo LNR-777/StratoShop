@@ -1,6 +1,7 @@
 # Secrets
 pass_val.txt
 user_val.txt
+.env
 
 # Maven
 target/

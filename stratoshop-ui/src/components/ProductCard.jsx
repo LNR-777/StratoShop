@@ -6,6 +6,11 @@ import './ProductCard.css';
 
 const ProductCard = ({ product }) => {
     const { addToCart } = useCart();
+    const priceValue = Number(product.price);
+    const [whole, decimal = '00'] = priceValue.toFixed(2).split('.');
+    const stock = product.stockQuantity ?? 0;
+    const stockLabel = stock === 0 ? 'Out of Stock' : stock <= 5 ? 'Low Stock' : 'In Stock';
+    const stockClass = stock === 0 ? 'out-of-stock' : stock <= 5 ? 'low-stock' : 'in-stock';
 
     return (
         <div className="product-card group">
@@ -26,8 +31,8 @@ const ProductCard = ({ product }) => {
             <div className="card-body">
                 <div className="card-meta">
                     <span className="card-category">{product.category}</span>
-                    <div className="card-rating">
-                        <span className="dot"></span> In Stock
+                    <div className={`card-rating ${stockClass}`}>
+                        <span className="dot"></span> {stockLabel}
                     </div>
                 </div>
 
@@ -40,13 +45,14 @@ const ProductCard = ({ product }) => {
                 <div className="card-footer">
                     <div className="card-price-tag">
                         <span className="currency">$</span>
-                        <span className="amount">{product.price.toString().split('.')[0]}</span>
-                        <span className="decimal">.{product.price.toString().split('.')[1] || '00'}</span>
+                        <span className="amount">{whole}</span>
+                        <span className="decimal">.{decimal}</span>
                     </div>
                     <button
                         className="btn-add-cart glow-on-hover"
-                        title="Add to Cart"
+                        title={stock === 0 ? 'Out of Stock' : 'Add to Cart'}
                         onClick={() => addToCart(product)}
+                        disabled={stock === 0}
                     >
                         <Plus size={20} />
                     </button>
